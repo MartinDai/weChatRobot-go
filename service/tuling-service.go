@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"weChatRobot-go/config"
 	"weChatRobot-go/models"
-	"weChatRobot-go/setting"
 )
 
 const TulingApiUrl = "http://openapi.tuling123.com/openapi/api/v2"
@@ -21,7 +21,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 			Text: content,
 		}},
 		UserInfo: models.UserInfo{
-			ApiKey: setting.Conf.ApiKey,
+			ApiKey: config.ApiKey,
 			UserId: toUserName,
 		},
 	}

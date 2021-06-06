@@ -17,8 +17,8 @@
 1. 使用之前需要有微信公众号的帐号以及图灵机器人的帐号，没有的请戳[微信公众号申请](https://mp.weixin.qq.com/cgi-bin/readtemplate?t=register/step1_tmpl&lang=zh_CN)和[图灵机器人帐号注册](http://tuling123.com/register/email.jhtml)。
 2. 在conf目录下的config.ini文件里面配置app相关的key。
 3. 微信公众号URL配置为`http://robot.doodl6.com/weChat/receiveMessage`,其中`robot.doodl6.com`是你自己的域名，token与`config.ini`文件配置一致即可。
-4. 命令启动：`go run main.go conf/config.ini`
-5. 编译启动：先执行`go build`命令编译，再执行`./weChatRobot-go conf/config.ini`启动
+4. 本地开发时（以IDEA为例）需要配置Preferences -> Go | Build Tags & Vendoring 设置Custom tags的值为 dev
+5. 编译运行：在根目录执行`go build -tags dev -o weChatRobot-go main.go`，该命令会使用config_dev.go作为配置文件编译得到可执行文件`weChatRobot-go`，执行`./weChatRobot-go`启动项目
 
 ## 支持的功能
 * [x] 自动回复文本消息，回复内容来自于图灵机器人

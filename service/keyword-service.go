@@ -2,21 +2,13 @@ package service
 
 import (
 	"github.com/bitly/go-simplejson"
-	"io/ioutil"
 	"log"
-	"weChatRobot-go/setting"
 )
 
 var keywordMessageMap = make(map[string]*simplejson.Json)
 
-func InitKeywordMap() {
-	keywordMessageBytes, err := ioutil.ReadFile(setting.Conf.KeywordLocation)
-	if err != nil {
-		log.Printf("读取关键字JSON文件报错:%v", err)
-		return
-	}
-
-	keywordJson, err := simplejson.NewJson(keywordMessageBytes)
+func InitKeywordMap(keywordBytes []byte) {
+	keywordJson, err := simplejson.NewJson(keywordBytes)
 	if err != nil {
 		log.Printf("解析关键字JSON文件报错:%v", err)
 		return

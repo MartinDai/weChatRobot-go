@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"weChatRobot-go/config"
 	"weChatRobot-go/models"
 	"weChatRobot-go/service"
-	"weChatRobot-go/setting"
 )
 
 func IndexHandler(c *gin.Context) {
@@ -52,7 +52,7 @@ func CheckSignature(signature, timestamp, nonce string) bool {
 		return false
 	}
 
-	arr := []string{setting.Conf.Token, timestamp, nonce}
+	arr := []string{config.Token, timestamp, nonce}
 	// 将token、timestamp、nonce三个参数进行字典序排序
 	sort.Strings(arr)
 	//拼接字符串
