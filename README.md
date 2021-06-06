@@ -1,5 +1,7 @@
 # weChatRobot
-一个简单的智能聊天机器人项目，基于微信公众号和图灵机器人(V2)开发。（本项目还有Java实现的版本https://github.com/MartinDai/weChatRobot）
+一个简单的智能聊天机器人项目，基于微信公众号和图灵机器人(V2)开发。
+
+本项目还有Java实现的版本：https://github.com/MartinDai/weChatRobot
 
 ![qrcode](static/images/qrcode.jpg "扫码关注，体验智能机器人")
 
