@@ -19,6 +19,7 @@
 3. 微信公众号URL配置为`http://robot.doodl6.com/weChat/receiveMessage`,其中`robot.doodl6.com`是你自己的域名，token与`config.ini`文件配置一致即可。
 4. 本地开发时（以IDEA为例）需要配置Preferences -> Go | Build Tags & Vendoring 设置Custom tags的值为 dev
 5. 编译运行：在根目录执行`go build -tags dev -o weChatRobot-go main.go`，该命令会使用config_dev.go作为配置文件编译得到可执行文件`weChatRobot-go`，执行`./weChatRobot-go`启动项目
+6. 编译Linux下的可执行文件：`CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags dev -o weChatRobot-go main.go`
 
 ## 支持的功能
 * [x] 自动回复文本消息，回复内容来自于图灵机器人
