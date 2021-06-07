@@ -3,18 +3,25 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sync/atomic"
 	"weChatRobot-go/config"
 	"weChatRobot-go/models"
 )
 
 const TulingApiUrl = "http://openapi.tuling123.com/openapi/api/v2"
 
+//对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
+var userNameIdMap = make(map[string]int32)
+var userIdAdder int32 = 0
+
 // GetRespMessageFromTuling 从图灵机器人获取响应消息
 func GetRespMessageFromTuling(fromUserName, toUserName, content string) interface{} {
+	userId := GetUserId(toUserName)
 	req := models.ReqParam{
 		ReqType: 0,
 		Perception: models.Perception{InputText: models.InputText{
@@ -22,7 +29,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 		}},
 		UserInfo: models.UserInfo{
 			ApiKey: config.ApiKey,
-			UserId: toUserName,
+			UserId: fmt.Sprintf("%d", userId),
 		},
 	}
 
@@ -76,4 +83,14 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 	}
 
 	return nil
+}
+
+func GetUserId(userName string) int32 {
+	if userId, ok := userNameIdMap[userName]; ok {
+		return userId
+	} else {
+		userId := atomic.AddInt32(&userIdAdder, 1)
+		userNameIdMap[userName] = userId
+		return userId
+	}
 }
