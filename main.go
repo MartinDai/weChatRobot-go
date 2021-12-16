@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
@@ -18,11 +19,15 @@ var f embed.FS
 var keywordBytes []byte
 
 func main() {
+	var port int
+	flag.IntVar(&port, "p", config.Port, "端口号")
+	flag.Parse()
+
 	go service.InitKeywordMap(keywordBytes)
 
 	// 注册路由
 	router := SetupRouter()
-	if err := router.Run(fmt.Sprintf(":%d", config.Port)); err != nil {
+	if err := router.Run(fmt.Sprintf(":%d", port)); err != nil {
 		fmt.Printf("server startup failed, err:%v\n", err)
 	}
 }
