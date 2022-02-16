@@ -29,15 +29,17 @@
 
 执行`./weChatRobot-go`以默认端口启动项目，也可以通过`./weChatRobot-go -p <port>`指定端口启动项目 
 
-编译Linux下的可执行文件：
+编译适合当前系统的可执行文件：
 ```
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags dev -o weChatRobot-go main.go
+make weChatRobot
 ```
 
-编译苹果M1芯片下的可执行文件：
+编译全平台的可执行文件：
 ```
-CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -tags dev -o weChatRobot-go main.go
+make all
 ```
+
+生成的可执行文件在bin目录下
 
 ## Docker运行
 
