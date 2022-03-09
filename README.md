@@ -48,9 +48,14 @@ make all
 docker build --no-cache -t wechatrobot-go:latest .
 ```
 
-编译好镜像以后，执行下面的命令，可以后台启动项目
+后台启动项目
 ```
 docker run --name wechatrobot-go -p 8080:8080 -d wechatrobot-go:latest
+```
+
+指定端口启动
+```
+docker run --name wechatrobot-go -p 9999:9999 -d wechatrobot-go:latest -p 9999
 ```
 
 
