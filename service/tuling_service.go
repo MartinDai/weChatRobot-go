@@ -9,15 +9,15 @@ import (
 	"log"
 	"net/http"
 	"sync/atomic"
-	"weChatRobot-go/config"
 	"weChatRobot-go/models"
 )
 
-const TulingApiUrl = "http://openapi.tuling123.com/openapi/api/v2"
+const TulingApiUrl = "https://openapi.tuling123.com/openapi/api/v2"
 
 //对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
 var userNameIdMap = make(map[string]int32)
 var userIdAdder int32 = 0
+var TulingConfig models.TulingConfig
 
 // GetRespMessageFromTuling 从图灵机器人获取响应消息
 func GetRespMessageFromTuling(fromUserName, toUserName, content string) interface{} {
@@ -28,7 +28,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 			Text: content,
 		}},
 		UserInfo: models.UserInfo{
-			ApiKey: config.ApiKey,
+			ApiKey: TulingConfig.AppKey,
 			UserId: fmt.Sprintf("%d", userId),
 		},
 	}
@@ -58,13 +58,14 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 	log.Printf("收到图灵机器人响应内容 %v", resultJson)
 
 	code, _ := resultJson.Get("intent").Get("code").Int()
-	if code == models.ParamErrCode {
+	switch code {
+	case models.ParamErrCode:
 		return BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
-	} else if code == models.NoResultCode {
+	case models.NoResultCode:
 		return BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
-	} else if code == models.NoApiTimesCode {
+	case models.NoApiTimesCode:
 		return BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
-	} else if code == models.TextCode {
+	case models.TextCode:
 		var respTextMessage interface{}
 		resultArray, _ := resultJson.Get("results").Array()
 		for _, result := range resultArray {

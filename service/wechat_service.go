@@ -1,11 +1,38 @@
 package service
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/xml"
 	"log"
+	"sort"
+	"strings"
 	"time"
 	"weChatRobot-go/models"
 )
+
+type WechatService struct {
+	Config models.WechatConfig
+}
+
+// CheckSignature 校验签名
+func (ws *WechatService) CheckSignature(signature, timestamp, nonce string) bool {
+	if signature == "" || timestamp == "" || nonce == "" {
+		return false
+	}
+
+	arr := []string{ws.Config.Token, timestamp, nonce}
+	// 将token、timestamp、nonce三个参数进行字典序排序
+	sort.Strings(arr)
+	//拼接字符串
+	content := strings.Join(arr, "")
+	//sha1签名
+	sha := sha1.New()
+	sha.Write([]byte(content))
+	sha1Value := hex.EncodeToString(sha.Sum(nil))
+
+	return signature == sha1Value
+}
 
 func GetResponseMessage(reqMessage models.ReqMessage) string {
 	var respMessage interface{}

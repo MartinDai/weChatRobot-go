@@ -1,15 +1,10 @@
 package controller
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sort"
-	"strings"
-	"weChatRobot-go/config"
 	"weChatRobot-go/models"
 	"weChatRobot-go/service"
 )
@@ -18,13 +13,17 @@ func IndexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
 
+type MessageController struct {
+	WechatService service.WechatService
+}
+
 // ReceiveMessage 收到微信回调信息
-func ReceiveMessage(c *gin.Context) {
+func (mc *MessageController) ReceiveMessage(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		signature := c.Query("signature")
 		timestamp := c.Query("timestamp")
 		nonce := c.Query("nonce")
-		if CheckSignature(signature, timestamp, nonce) {
+		if mc.WechatService.CheckSignature(signature, timestamp, nonce) {
 			_, _ = fmt.Fprint(c.Writer, c.Query("echostr"))
 		} else {
 			_, _ = fmt.Fprint(c.Writer, "你是谁？你想干嘛？")
@@ -44,23 +43,4 @@ func ReceiveMessage(c *gin.Context) {
 
 		_, _ = fmt.Fprint(c.Writer, respXmlStr)
 	}
-}
-
-// CheckSignature 校验签名
-func CheckSignature(signature, timestamp, nonce string) bool {
-	if signature == "" || timestamp == "" || nonce == "" {
-		return false
-	}
-
-	arr := []string{config.Token, timestamp, nonce}
-	// 将token、timestamp、nonce三个参数进行字典序排序
-	sort.Strings(arr)
-	//拼接字符串
-	content := strings.Join(arr, "")
-	//sha1签名
-	sha := sha1.New()
-	sha.Write([]byte(content))
-	sha1Value := hex.EncodeToString(sha.Sum(nil))
-
-	return signature == sha1Value
 }

@@ -26,4 +26,4 @@ weChatRobot-windows_amd64:
 
 .PHONY: weChatRobot
 weChatRobot:
-	GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) -tags dev .
+	CGO_ENABLED=0 go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .

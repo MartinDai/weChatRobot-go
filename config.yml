@@ -1,0 +1,7 @@
+application:
+  port: 8080 #监听端口
+  mode: debug #GIN启动模式，支持 test debug release
+wechat:
+  token: "atming_" #对应微信公众号设置里面的Token
+tuling:
+  api_key: "28f46f7363c0442dbe8caf6261284fb5" #请替换为自己申请的key
