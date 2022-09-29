@@ -5,7 +5,7 @@ package models
 const ParamErrCode = 4000   //请求参数格式错误
 const NoResultCode = 5000   //无解析结果
 const NoApiTimesCode = 4003 //该apikey没有可用请求次数
-const TextCode = 10004
+const SuccessCode = 0
 
 const TextResultType = "text"
 

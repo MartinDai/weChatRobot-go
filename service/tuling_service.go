@@ -65,7 +65,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 		return BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
 	case models.NoApiTimesCode:
 		return BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
-	case models.TextCode:
+	case models.SuccessCode:
 		var respTextMessage interface{}
 		resultArray, _ := resultJson.Get("results").Array()
 		for _, result := range resultArray {
