@@ -2,7 +2,7 @@
 
 一个基于微信公众号的智能聊天机器人项目，支持图灵机器人(V2)和ChatGPT对话模式回复内容
 
-本项目还有Java实现的版本：https://github.com/MartinDai/weChatRobot
+本项目还有Java实现的版本：<https://github.com/MartinDai/weChatRobot>
 
 ![qrcode](static/images/qrcode.jpg "扫码关注，体验智能机器人")
 

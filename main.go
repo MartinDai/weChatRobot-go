@@ -49,7 +49,7 @@ func runApp(configFile string) error {
 	// 注册路由
 	router := setupRouter(configSettings)
 	if err := router.Run(fmt.Sprintf(":%d", configSettings.AppConfig.Port)); err != nil {
-		return fmt.Errorf("[ERROR] server startup failed, err:%v\n", err)
+		return fmt.Errorf("[ERROR] server startup failed, err:%v", err)
 	}
 
 	return nil
