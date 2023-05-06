@@ -12,7 +12,7 @@
   
 ## 涉及框架及技术
 
-+ go 1.17
++ go 1.19
 + gin
 + simplejson
 + koanf
