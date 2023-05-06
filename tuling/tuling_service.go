@@ -1,34 +1,36 @@
-package service
+package tuling
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sync/atomic"
+	"weChatRobot-go/message"
 	"weChatRobot-go/models"
+
+	"github.com/bitly/go-simplejson"
 )
 
 const TulingApiUrl = "https://openapi.tuling123.com/openapi/api/v2"
 
-//对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
+// 对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
 var userNameIdMap = make(map[string]int32)
 var userIdAdder int32 = 0
-var TulingConfig models.TulingConfig
+var ApiKey string
 
-// GetRespMessageFromTuling 从图灵机器人获取响应消息
-func GetRespMessageFromTuling(fromUserName, toUserName, content string) interface{} {
-	userId := GetUserId(toUserName)
+// GetRespMessage 从图灵机器人获取响应消息
+func GetRespMessage(fromUserName, toUserName, content string) interface{} {
+	userId := getUserId(toUserName)
 	req := models.ReqParam{
 		ReqType: 0,
 		Perception: models.Perception{InputText: models.InputText{
 			Text: content,
 		}},
 		UserInfo: models.UserInfo{
-			ApiKey: TulingConfig.AppKey,
+			ApiKey: ApiKey,
 			UserId: fmt.Sprintf("%d", userId),
 		},
 	}
@@ -60,11 +62,11 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 	code, _ := resultJson.Get("intent").Get("code").Int()
 	switch code {
 	case models.ParamErrCode:
-		return BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
+		return message.BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
 	case models.NoResultCode:
-		return BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
+		return message.BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
 	case models.NoApiTimesCode:
-		return BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
+		return message.BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
 	case models.SuccessCode:
 		var respTextMessage interface{}
 		resultArray, _ := resultJson.Get("results").Array()
@@ -73,7 +75,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 			if resultMap, ok := result.(map[string]interface{}); ok {
 				if resultMap["resultType"].(string) == models.TextResultType {
 					valueMap := resultMap["values"].(map[string]interface{})
-					respTextMessage = BuildRespTextMessage(fromUserName, toUserName, valueMap["text"].(string))
+					respTextMessage = message.BuildRespTextMessage(fromUserName, toUserName, valueMap["text"].(string))
 					break
 				}
 			}
@@ -86,7 +88,7 @@ func GetRespMessageFromTuling(fromUserName, toUserName, content string) interfac
 	return nil
 }
 
-func GetUserId(userName string) int32 {
+func getUserId(userName string) int32 {
 	if userId, ok := userNameIdMap[userName]; ok {
 		return userId
 	} else {

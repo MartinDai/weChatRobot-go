@@ -4,15 +4,19 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path"
+	"weChatRobot-go/chatgpt"
 	"weChatRobot-go/config"
 	"weChatRobot-go/controller"
 	"weChatRobot-go/models"
 	"weChatRobot-go/service"
+	"weChatRobot-go/tuling"
+
+	"github.com/gin-gonic/gin"
 )
 
 //go:embed static/images templates
@@ -37,7 +41,8 @@ func runApp(configFile string) error {
 		return err
 	}
 
-	service.TulingConfig = configSettings.TulingConfig
+	chatgpt.ApiKey = os.Getenv("OPENAI_API_KEY")
+	tuling.ApiKey = os.Getenv("TULING_API_KEY")
 
 	go service.InitKeywordMap(keywordBytes)
 

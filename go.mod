@@ -6,6 +6,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/knadh/koanf v1.4.0
+	github.com/otiai10/openaigo v1.1.0
 )
 
 require (

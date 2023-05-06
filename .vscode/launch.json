@@ -9,8 +9,15 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "env": {
+                "OPENAI_API_KEY": "",
+                "TULING_API_KEY": ""
+            },
             "program": "${workspaceFolder}/main.go",
-            "args": ["-config", "./config.yml"]
+            "args": [
+                "-config",
+                "./config.yml"
+            ]
         }
     ]
 }

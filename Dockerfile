@@ -1,4 +1,4 @@
-FROM golang:1.17.2 as build
+FROM golang:1.19.9 as build
 
 WORKDIR /src/weChatRobot-go
 
