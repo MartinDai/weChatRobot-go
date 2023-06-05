@@ -1,29 +1,32 @@
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
+.DEFAULT_GOAL := build
+
 .PHONY: all
-all: weChatRobot-darwin_amd64 weChatRobot-darwin_arm64 weChatRobot-linux_amd64 weChatRobot-linux_arm64 weChatRobot-windows_amd64
+all: darwin_amd64 darwin_arm64 linux_amd64 linux_arm64 windows_amd64
 
-.PHONY: weChatRobot-darwin_amd64
-weChatRobot-darwin_amd64:
-	GOOS=darwin  GOARCH=amd64 $(MAKE) weChatRobot
+.PHONY: darwin_amd64
+darwin_amd64:
+	GOOS=darwin GOARCH=amd64 $(MAKE) build
 
-.PHONY: weChatRobot-darwin_arm64
-weChatRobot-darwin_arm64:
-	GOOS=darwin  GOARCH=arm64 $(MAKE) weChatRobot
+.PHONY: darwin_arm64
+darwin_arm64:
+	GOOS=darwin GOARCH=arm64 $(MAKE) build
 
-.PHONY: weChatRobot-linux_amd64
-weChatRobot-linux_amd64:
-	GOOS=linux   GOARCH=amd64 $(MAKE) weChatRobot
+.PHONY: linux_amd64
+linux_amd64:
+	GOOS=linux GOARCH=amd64 $(MAKE) build
 
-.PHONY: weChatRobot-linux_arm64
-weChatRobot-linux_arm64:
-	GOOS=linux   GOARCH=arm64 $(MAKE) weChatRobot
+.PHONY: linux_arm64
+linux_arm64:
+	GOOS=linux GOARCH=arm64 $(MAKE) build
 
-.PHONY: weChatRobot-windows_amd64
-weChatRobot-windows_amd64:
-	GOOS=windows GOARCH=amd64 EXTENSION=.exe $(MAKE) weChatRobot
+.PHONY: windows_amd64
+windows_amd64:
+	GOOS=windows GOARCH=amd64 EXTENSION=.exe $(MAKE) build
 
-.PHONY: weChatRobot
-weChatRobot:
-	CGO_ENABLED=0 go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .
+.PHONY: build
+build:
+	CGO_ENABLED=0
+	go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .

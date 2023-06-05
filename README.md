@@ -50,7 +50,7 @@
 编译适合当前系统的可执行文件：
 
 ```shell
-make weChatRobot
+make
 ```
 
 编译全平台的可执行文件：
