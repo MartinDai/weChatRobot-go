@@ -28,5 +28,4 @@ windows_amd64:
 
 .PHONY: build
 build:
-	CGO_ENABLED=0
-	go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .
+	CGO_ENABLED=0 go build -trimpath -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .

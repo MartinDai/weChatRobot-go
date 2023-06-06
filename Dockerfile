@@ -5,7 +5,7 @@ WORKDIR /src/weChatRobot-go
 COPY . ./
 
 RUN rm -rf bin/ || true && \
-    make weChatRobot
+    make
 
 FROM alpine:3.15
 

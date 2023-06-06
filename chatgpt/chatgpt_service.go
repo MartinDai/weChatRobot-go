@@ -12,6 +12,7 @@ var ApiKey string
 
 func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 	client := openaigo.NewClient(ApiKey)
+	//client.BaseURL = "https://chatgpt.workers.dev/v1"
 	// proxy_url, _ := url.Parse("http://127.0.0.1:7890")
 	// transport := &http.Transport{Proxy: http.ProxyURL(proxy_url)}
 	// client.HTTPClient = &http.Client{Transport: transport}
