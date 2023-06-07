@@ -4,10 +4,10 @@ WORKDIR /src/weChatRobot-go
 
 COPY . ./
 
-RUN rm -rf bin/ || true && \
-    make
+RUN rm -rf bin/ || true
+RUN make
 
-FROM alpine:3.15
+FROM alpine:3.16
 
 USER root
 
