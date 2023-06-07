@@ -1,7 +1,7 @@
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
-GOBUILD=CGO_ENABLED=0 go build -trimpath
+GO_BUILD=CGO_ENABLED=0 go build -trimpath
 
 .DEFAULT_GOAL := build
 
@@ -30,4 +30,4 @@ windows_amd64:
 
 .PHONY: build
 build:
-	$(GOBUILD) -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .
+	$(GO_BUILD) -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .
