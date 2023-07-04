@@ -5,6 +5,7 @@ import (
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
+	"path/filepath"
 	"weChatRobot-go/models"
 )
 
@@ -25,9 +26,14 @@ func (ycp *ymlConfigProvider) RetrieveConfig() (*models.ConfigSettings, error) {
 	}
 
 	var config models.ConfigSettings
+	absolutePath, err := filepath.Abs(ycp.filePath)
+	if err != nil {
+		return nil, err
+	}
+
 	k := koanf.New("::")
-	_ = k.Load(file.Provider(ycp.filePath), yaml.Parser())
-	err := k.Unmarshal("", &config)
+	_ = k.Load(file.Provider(absolutePath), yaml.Parser())
+	err = k.Unmarshal("", &config)
 	if err != nil {
 		return nil, err
 	}
