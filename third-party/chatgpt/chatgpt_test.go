@@ -7,8 +7,7 @@ import (
 )
 
 func TestGetRespMessage(t *testing.T) {
-	chatgpt.ApiKey = "sk-*****"
-
-	var respMessage = chatgpt.GetRespMessage("aaa", "bbb", "什么是GPT")
+	chatGPT := chatgpt.NewChatGPT("sk-*****", "", "")
+	var respMessage = chatGPT.GetRespMessage("aaa", "bbb", "什么是GPT")
 	fmt.Printf("respMessage:%v", respMessage)
 }

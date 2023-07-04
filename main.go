@@ -19,6 +19,7 @@ import (
 	"weChatRobot-go/service"
 	"weChatRobot-go/third-party/chatgpt"
 	"weChatRobot-go/third-party/tuling"
+	"weChatRobot-go/util"
 )
 
 //go:embed static/images templates
@@ -38,19 +39,16 @@ func main() {
 }
 
 func runApp(configFile string) error {
-	conf, err := getConfig(configFile)
+	config, err := getConfig(configFile)
 	if err != nil {
 		return err
 	}
 
-	chatgpt.ApiKey = os.Getenv("OPENAI_API_KEY")
-	tuling.ApiKey = os.Getenv("TULING_API_KEY")
-
 	service.InitKeywordMap(keywordBytes)
 
-	router := setupRouter(conf)
+	router := setupRouter(config)
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", conf.AppConfig.Port),
+		Addr:    fmt.Sprintf(":%d", config.AppConfig.Port),
 		Handler: router,
 	}
 
@@ -91,8 +89,8 @@ func getConfig(configFile string) (*model.Config, error) {
 	}
 }
 
-func setupRouter(cs *model.Config) *gin.Engine {
-	gin.SetMode(cs.AppConfig.Mode)
+func setupRouter(config *model.Config) *gin.Engine {
+	gin.SetMode(config.AppConfig.Mode)
 
 	router := gin.Default()
 	//模板文件
@@ -103,9 +101,29 @@ func setupRouter(cs *model.Config) *gin.Engine {
 
 	router.GET("/", controller.IndexHandler)
 
-	ws := controller.MessageController{
-		WechatService: struct{ Config model.WechatConfig }{Config: cs.WechatConfig},
+	openaiApiKey := os.Getenv("OPENAI_API_KEY")
+	var chatGPT *chatgpt.ChatGPT
+	if openaiApiKey != "" {
+		openaiBaseDomain := os.Getenv("OPENAI_BASE_DOMAIN")
+		if openaiBaseDomain != "" && !util.ValidateAddress(openaiBaseDomain) {
+			log.Fatalf("[ERROR] OPENAI_BASE_DOMAIN is not valid:%v", openaiBaseDomain)
+		}
+
+		openaiProxy := os.Getenv("OPENAI_PROXY")
+		if openaiProxy != "" && !util.ValidateAddress(openaiProxy) {
+			log.Fatalf("[ERROR] OPENAI_PROXY is not valid:%v", openaiBaseDomain)
+		}
+
+		chatGPT = chatgpt.NewChatGPT(openaiApiKey, openaiBaseDomain, openaiProxy)
 	}
+
+	var tl *tuling.Tuling
+	tulingApiKey := os.Getenv("TULING_API_KEY")
+	if tulingApiKey != "" {
+		tl = tuling.NewTuling(tulingApiKey)
+	}
+
+	ws := controller.NewMessageController(&config.WechatConfig, chatGPT, tl)
 	weChatGroup := router.Group("weChat")
 	{
 		//签名回调

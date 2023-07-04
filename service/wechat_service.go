@@ -14,7 +14,17 @@ import (
 )
 
 type WechatService struct {
-	Config model.WechatConfig
+	config  *model.WechatConfig
+	chatGPT *chatgpt.ChatGPT
+	tuling  *tuling.Tuling
+}
+
+func NewWechatService(wc *model.WechatConfig, chatGPT *chatgpt.ChatGPT, tuling *tuling.Tuling) *WechatService {
+	return &WechatService{
+		config:  wc,
+		chatGPT: chatGPT,
+		tuling:  tuling,
+	}
 }
 
 // CheckSignature 校验签名
@@ -23,7 +33,7 @@ func (ws *WechatService) CheckSignature(signature, timestamp, nonce string) bool
 		return false
 	}
 
-	arr := []string{ws.Config.Token, timestamp, nonce}
+	arr := []string{ws.config.Token, timestamp, nonce}
 	// 将token、timestamp、nonce三个参数进行字典序排序
 	sort.Strings(arr)
 	//拼接字符串
@@ -36,7 +46,7 @@ func (ws *WechatService) CheckSignature(signature, timestamp, nonce string) bool
 	return signature == sha1Value
 }
 
-func GetResponseMessage(reqMessage model.ReqMessage) string {
+func (ws *WechatService) GetResponseMessage(reqMessage model.ReqMessage) string {
 	var respMessage interface{}
 	if reqMessage.MsgType == model.MsgTypeEvent {
 		respMessage = getRespMessageByEvent(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Event)
@@ -44,12 +54,12 @@ func GetResponseMessage(reqMessage model.ReqMessage) string {
 		respMessage = getRespMessageByKeyword(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 
 		//优先使用ChatGPT响应
-		if respMessage == nil && chatgpt.ApiKey != "" {
-			respMessage = chatgpt.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
+		if respMessage == nil && ws.chatGPT != nil {
+			respMessage = ws.chatGPT.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 		}
 
-		if respMessage == nil && tuling.ApiKey != "" {
-			respMessage = tuling.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
+		if respMessage == nil && ws.tuling != nil {
+			respMessage = ws.tuling.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 		}
 	} else {
 		respMessage = util.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, "我只对文字感兴趣[悠闲]")

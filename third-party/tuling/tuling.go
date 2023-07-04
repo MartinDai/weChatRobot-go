@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"sync/atomic"
@@ -14,23 +14,33 @@ import (
 	"github.com/bitly/go-simplejson"
 )
 
-const TulingApiUrl = "https://openapi.tuling123.com/openapi/api/v2"
+const tulingApiUrl = "https://openapi.tuling123.com/openapi/api/v2"
 
-// 对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
-var userNameIdMap = make(map[string]int32)
-var userIdAdder int32 = 0
-var ApiKey string
+type Tuling struct {
+	apiKey string
+	// 对微信传过来的userName做映射，因为有些userName的格式是图灵API不支持的
+	userNameIdMap map[string]int32
+	userIdAdder   int32
+}
+
+func NewTuling(apiKey string) *Tuling {
+	return &Tuling{
+		apiKey:        apiKey,
+		userNameIdMap: make(map[string]int32),
+		userIdAdder:   0,
+	}
+}
 
 // GetRespMessage 从图灵机器人获取响应消息
-func GetRespMessage(fromUserName, toUserName, content string) interface{} {
-	userId := getUserId(toUserName)
+func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interface{} {
+	userId := t.getUserId(toUserName)
 	req := model.ReqParam{
 		ReqType: 0,
 		Perception: model.Perception{InputText: model.InputText{
 			Text: content,
 		}},
 		UserInfo: model.UserInfo{
-			ApiKey: ApiKey,
+			ApiKey: t.apiKey,
 			UserId: fmt.Sprintf("%d", userId),
 		},
 	}
@@ -39,13 +49,13 @@ func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 	reqJson := string(reqJsonBytes)
 	log.Printf("请求图灵机器人参数 %v", reqJson)
 
-	resp, err := http.Post(TulingApiUrl, "application/json", bytes.NewReader(reqJsonBytes))
+	resp, err := http.Post(tulingApiUrl, "application/json", bytes.NewReader(reqJsonBytes))
 	if err != nil {
 		log.Printf("从图灵机器人获取响应内容报错,err:%v", err)
 		return nil
 	}
 
-	result, err := ioutil.ReadAll(resp.Body)
+	result, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("读取图灵机器人响应内容报错,err:%v", err)
 		return nil
@@ -88,12 +98,12 @@ func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 	return nil
 }
 
-func getUserId(userName string) int32 {
-	if userId, ok := userNameIdMap[userName]; ok {
+func (t *Tuling) getUserId(userName string) int32 {
+	if userId, ok := t.userNameIdMap[userName]; ok {
 		return userId
 	} else {
-		userId := atomic.AddInt32(&userIdAdder, 1)
-		userNameIdMap[userName] = userId
+		userId := atomic.AddInt32(&t.userIdAdder, 1)
+		t.userNameIdMap[userName] = userId
 		return userId
 	}
 }
