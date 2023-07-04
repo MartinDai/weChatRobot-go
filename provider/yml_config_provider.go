@@ -1,4 +1,4 @@
-package config
+package provider
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"path/filepath"
-	"weChatRobot-go/models"
+	"weChatRobot-go/model"
 )
 
 type ymlConfigProvider struct {
@@ -20,12 +20,12 @@ func NewFile(filePath string) Provider {
 	}
 }
 
-func (ycp *ymlConfigProvider) RetrieveConfig() (*models.ConfigSettings, error) {
+func (ycp *ymlConfigProvider) RetrieveConfig() (*model.Config, error) {
 	if ycp.filePath == "" {
 		return nil, errors.New("config file not specified")
 	}
 
-	var config models.ConfigSettings
+	var config model.Config
 	absolutePath, err := filepath.Abs(ycp.filePath)
 	if err != nil {
 		return nil, err

@@ -1,12 +1,12 @@
-package message
+package util
 
 import (
 	"time"
-	"weChatRobot-go/models"
+	"weChatRobot-go/model"
 )
 
-func BuildRespTextMessage(fromUserName, toUserName, content string) models.RespTextMessage {
-	respMessage := models.RespTextMessage{
+func BuildRespTextMessage(fromUserName, toUserName, content string) model.RespTextMessage {
+	respMessage := model.RespTextMessage{
 		Content: content,
 	}
 	respMessage.FromUserName = fromUserName
@@ -16,8 +16,8 @@ func BuildRespTextMessage(fromUserName, toUserName, content string) models.RespT
 	return respMessage
 }
 
-func BuildRespNewsMessage(fromUserName, toUserName string, articles []models.ArticleItem) models.RespNewsMessage {
-	respMessage := models.RespNewsMessage{
+func BuildRespNewsMessage(fromUserName, toUserName string, articles []model.ArticleItem) model.RespNewsMessage {
+	respMessage := model.RespNewsMessage{
 		ArticleCount: len(articles),
 		Articles:     articles,
 	}

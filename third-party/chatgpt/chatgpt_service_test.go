@@ -3,7 +3,7 @@ package chatgpt_test
 import (
 	"fmt"
 	"testing"
-	"weChatRobot-go/chatgpt"
+	"weChatRobot-go/third-party/chatgpt"
 )
 
 func TestGetRespMessage(t *testing.T) {

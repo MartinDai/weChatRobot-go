@@ -1,22 +1,24 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"flag"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
-	"weChatRobot-go/chatgpt"
-	"weChatRobot-go/config"
+	"time"
 	"weChatRobot-go/controller"
-	"weChatRobot-go/models"
+	"weChatRobot-go/model"
+	"weChatRobot-go/provider"
 	"weChatRobot-go/service"
-	"weChatRobot-go/tuling"
-
-	"github.com/gin-gonic/gin"
+	"weChatRobot-go/third-party/chatgpt"
+	"weChatRobot-go/third-party/tuling"
 )
 
 //go:embed static/images templates
@@ -36,7 +38,7 @@ func main() {
 }
 
 func runApp(configFile string) error {
-	configSettings, err := getConfigSettings(configFile)
+	conf, err := getConfig(configFile)
 	if err != nil {
 		return err
 	}
@@ -44,31 +46,52 @@ func runApp(configFile string) error {
 	chatgpt.ApiKey = os.Getenv("OPENAI_API_KEY")
 	tuling.ApiKey = os.Getenv("TULING_API_KEY")
 
-	go service.InitKeywordMap(keywordBytes)
+	service.InitKeywordMap(keywordBytes)
 
-	// 注册路由
-	router := setupRouter(configSettings)
-	if err := router.Run(fmt.Sprintf(":%d", configSettings.AppConfig.Port)); err != nil {
-		return fmt.Errorf("[ERROR] server startup failed, err:%v", err)
+	router := setupRouter(conf)
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", conf.AppConfig.Port),
+		Handler: router,
 	}
+
+	ctx := context.Background()
+	go func() {
+		log.Printf("[INFO] Listening and serving HTTP on http://127.0.0.1%s\n", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal(fmt.Errorf("[ERROR] Server startup failed, Cause:%w", err))
+		}
+	}()
+
+	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("[INFO] Shutdown Server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("[ERROR] Server Shutdown:", err)
+	}
+	log.Println("[INFO] Server exiting")
 
 	return nil
 }
 
-func getConfigSettings(configFile string) (*models.ConfigSettings, error) {
+func getConfig(configFile string) (*model.Config, error) {
 	if configFile == "" {
 		return nil, fmt.Errorf("[ERROR] config file not specified")
 	}
 
 	fileExt := path.Ext(configFile)
 	if fileExt == ".yml" || fileExt == ".yaml" {
-		return config.NewFile(configFile).RetrieveConfig()
+		return provider.NewFile(configFile).RetrieveConfig()
 	} else {
 		return nil, fmt.Errorf("[ERROR] config file only support .yml or .yaml format")
 	}
 }
 
-func setupRouter(cs *models.ConfigSettings) *gin.Engine {
+func setupRouter(cs *model.Config) *gin.Engine {
 	gin.SetMode(cs.AppConfig.Mode)
 
 	router := gin.Default()
@@ -81,7 +104,7 @@ func setupRouter(cs *models.ConfigSettings) *gin.Engine {
 	router.GET("/", controller.IndexHandler)
 
 	ws := controller.MessageController{
-		WechatService: struct{ Config models.WechatConfig }{Config: cs.WechatConfig},
+		WechatService: struct{ Config model.WechatConfig }{Config: cs.WechatConfig},
 	}
 	weChatGroup := router.Group("weChat")
 	{

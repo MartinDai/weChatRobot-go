@@ -3,7 +3,7 @@ package chatgpt
 import (
 	"context"
 	"fmt"
-	"weChatRobot-go/message"
+	"weChatRobot-go/util"
 
 	"github.com/otiai10/openaigo"
 )
@@ -29,5 +29,5 @@ func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 		fmt.Printf("Completion error: %v\n", err)
 		return nil
 	}
-	return message.BuildRespTextMessage(fromUserName, toUserName, response.Choices[0].Message.Content)
+	return util.BuildRespTextMessage(fromUserName, toUserName, response.Choices[0].Message.Content)
 }

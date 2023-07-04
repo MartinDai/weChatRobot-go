@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"sync/atomic"
-	"weChatRobot-go/message"
-	"weChatRobot-go/models"
+	"weChatRobot-go/model"
+	"weChatRobot-go/util"
 
 	"github.com/bitly/go-simplejson"
 )
@@ -24,12 +24,12 @@ var ApiKey string
 // GetRespMessage 从图灵机器人获取响应消息
 func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 	userId := getUserId(toUserName)
-	req := models.ReqParam{
+	req := model.ReqParam{
 		ReqType: 0,
-		Perception: models.Perception{InputText: models.InputText{
+		Perception: model.Perception{InputText: model.InputText{
 			Text: content,
 		}},
-		UserInfo: models.UserInfo{
+		UserInfo: model.UserInfo{
 			ApiKey: ApiKey,
 			UserId: fmt.Sprintf("%d", userId),
 		},
@@ -61,21 +61,21 @@ func GetRespMessage(fromUserName, toUserName, content string) interface{} {
 
 	code, _ := resultJson.Get("intent").Get("code").Int()
 	switch code {
-	case models.ParamErrCode:
-		return message.BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
-	case models.NoResultCode:
-		return message.BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
-	case models.NoApiTimesCode:
-		return message.BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
-	case models.SuccessCode:
+	case model.ParamErrCode:
+		return util.BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
+	case model.NoResultCode:
+		return util.BuildRespTextMessage(fromUserName, toUserName, "我竟无言以对！")
+	case model.NoApiTimesCode:
+		return util.BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
+	case model.SuccessCode:
 		var respTextMessage interface{}
 		resultArray, _ := resultJson.Get("results").Array()
 		for _, result := range resultArray {
 			//转换成map结构
 			if resultMap, ok := result.(map[string]interface{}); ok {
-				if resultMap["resultType"].(string) == models.TextResultType {
+				if resultMap["resultType"].(string) == model.TextResultType {
 					valueMap := resultMap["values"].(map[string]interface{})
-					respTextMessage = message.BuildRespTextMessage(fromUserName, toUserName, valueMap["text"].(string))
+					respTextMessage = util.BuildRespTextMessage(fromUserName, toUserName, valueMap["text"].(string))
 					break
 				}
 			}

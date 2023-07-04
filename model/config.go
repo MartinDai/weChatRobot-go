@@ -1,6 +1,6 @@
-package models
+package model
 
-type ConfigSettings struct {
+type Config struct {
 	AppConfig    AppConfig    `koanf:"application"`
 	WechatConfig WechatConfig `koanf:"wechat"`
 }

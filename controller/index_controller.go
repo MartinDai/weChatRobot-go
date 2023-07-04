@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"weChatRobot-go/models"
+	"weChatRobot-go/model"
 	"weChatRobot-go/service"
 )
 
@@ -29,7 +29,7 @@ func (mc *MessageController) ReceiveMessage(c *gin.Context) {
 			_, _ = fmt.Fprint(c.Writer, "你是谁？你想干嘛？")
 		}
 	} else {
-		var reqMessage models.ReqMessage
+		var reqMessage model.ReqMessage
 		err := c.ShouldBindXML(&reqMessage)
 		if err != nil {
 			_, _ = fmt.Fprint(c.Writer, "系统处理消息异常")

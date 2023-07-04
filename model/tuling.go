@@ -1,4 +1,4 @@
-package models
+package model
 
 //图灵机器人响应码常量
 

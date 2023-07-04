@@ -7,14 +7,14 @@ import (
 	"log"
 	"sort"
 	"strings"
-	"weChatRobot-go/chatgpt"
-	"weChatRobot-go/message"
-	"weChatRobot-go/models"
-	"weChatRobot-go/tuling"
+	"weChatRobot-go/model"
+	"weChatRobot-go/third-party/chatgpt"
+	"weChatRobot-go/third-party/tuling"
+	"weChatRobot-go/util"
 )
 
 type WechatService struct {
-	Config models.WechatConfig
+	Config model.WechatConfig
 }
 
 // CheckSignature 校验签名
@@ -36,14 +36,14 @@ func (ws *WechatService) CheckSignature(signature, timestamp, nonce string) bool
 	return signature == sha1Value
 }
 
-func GetResponseMessage(reqMessage models.ReqMessage) string {
+func GetResponseMessage(reqMessage model.ReqMessage) string {
 	var respMessage interface{}
-	if reqMessage.MsgType == models.MsgTypeEvent {
+	if reqMessage.MsgType == model.MsgTypeEvent {
 		respMessage = getRespMessageByEvent(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Event)
-	} else if reqMessage.MsgType == models.MsgTypeText {
+	} else if reqMessage.MsgType == model.MsgTypeText {
 		respMessage = getRespMessageByKeyword(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 
-		//优先使用chatgpt响应
+		//优先使用ChatGPT响应
 		if respMessage == nil && chatgpt.ApiKey != "" {
 			respMessage = chatgpt.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 		}
@@ -52,12 +52,12 @@ func GetResponseMessage(reqMessage models.ReqMessage) string {
 			respMessage = tuling.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 		}
 	} else {
-		respMessage = message.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, "我只对文字感兴趣[悠闲]")
+		respMessage = util.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, "我只对文字感兴趣[悠闲]")
 	}
 
 	if respMessage == nil {
 		//最后兜底，如果没有响应，则返回输入的文字
-		respMessage = message.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
+		respMessage = util.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 	}
 
 	respXmlStr, err := xml.Marshal(&respMessage)
@@ -70,9 +70,9 @@ func GetResponseMessage(reqMessage models.ReqMessage) string {
 }
 
 func getRespMessageByEvent(fromUserName, toUserName, event string) interface{} {
-	if event == models.EventTypeSubscribe {
-		return message.BuildRespTextMessage(fromUserName, toUserName, "谢谢关注！可以开始跟我聊天啦😁")
-	} else if event == models.EventTypeUnsubscribe {
+	if event == model.EventTypeSubscribe {
+		return util.BuildRespTextMessage(fromUserName, toUserName, "谢谢关注！可以开始跟我聊天啦😁")
+	} else if event == model.EventTypeUnsubscribe {
 		log.Printf("用户[%v]取消了订阅", fromUserName)
 	}
 	return nil
@@ -86,31 +86,31 @@ func getRespMessageByKeyword(fromUserName, toUserName, keyword string) interface
 			return nil
 		}
 
-		if msgType == models.MsgTypeText {
+		if msgType == model.MsgTypeText {
 			content, _ := v.Get("Content").String()
-			return message.BuildRespTextMessage(fromUserName, toUserName, content)
-		} else if msgType == models.MsgTypeNews {
+			return util.BuildRespTextMessage(fromUserName, toUserName, content)
+		} else if msgType == model.MsgTypeNews {
 			articleArray, err := v.Get("Articles").Array()
 			if err != nil {
 				return nil
 			}
 
 			var articleLength = len(articleArray)
-			var articles = make([]models.ArticleItem, articleLength)
+			var articles = make([]model.ArticleItem, articleLength)
 			for i, articleJson := range articleArray {
 				if eachArticle, ok := articleJson.(map[string]interface{}); ok {
-					var article models.Article
+					var article model.Article
 					article.Title = eachArticle["Title"].(string)
 					article.Description = eachArticle["Description"].(string)
 					article.PicUrl = eachArticle["PicUrl"].(string)
 					article.Url = eachArticle["Url"].(string)
 
-					var articleItem models.ArticleItem
+					var articleItem model.ArticleItem
 					articleItem.Article = article
 					articles[i] = articleItem
 				}
 			}
-			return message.BuildRespNewsMessage(fromUserName, toUserName, articles)
+			return util.BuildRespNewsMessage(fromUserName, toUserName, articles)
 		}
 	}
 	return nil
