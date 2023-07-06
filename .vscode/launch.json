@@ -11,7 +11,9 @@
             "mode": "auto",
             "env": {
                 "OPENAI_API_KEY": "",
-                "TULING_API_KEY": ""
+                "TULING_API_KEY": "",
+                "OPENAI_BASE_DOMAIN": "",
+                "OPENAI_PROXY": ""
             },
             "program": "${workspaceFolder}/main.go",
             "args": [

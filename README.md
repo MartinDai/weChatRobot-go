@@ -12,10 +12,9 @@
   
 ## 涉及框架及技术
 
-+ go 1.19
-+ gin
-+ simplejson
-+ koanf
+- [gin](https://github.com/gin-gonic/gin)
+- [simplejson](https://github.com/bitly/go-simplejson)
+- [koanf](https://github.com/knadh/koanf)
 
 ## 支持的功能
 
@@ -31,31 +30,48 @@
 4. 可以通过配置环境变量`OPENAI_BASE_DOMAIN`更换访问OpenAI的域名
 5. 可以通过配置环境变量`OPENAI_PROXY`使用代理服务访问OpenAI
 6. 内容响应来源的优先级`自定义关键 > ChatGPT > 图灵机器人`
-7. 在微信公众号后台配置回调URL为[http://robot.doodl6.com/weChat/receiveMessage](http://robot.doodl6.com/weChat/receiveMessage)，其中`robot.doodl6.com`是你自己的域名，token与`config.yml`里面配置的保持一致即可
+7. 在微信公众号后台配置回调URL为<https://wechatrobot.doodl6.com/weChat/receiveMessage>，其中`wechatrobot.doodl6.com`是你自己的域名，token与`config.yml`里面配置的保持一致即可
 
 ## 本地开发
 
 ### GoLand
 
-需要配置Program Arguments为`-config ./config.yml`
+需要配置Program Arguments为`-config ./config.yml`，然后运行main.go
 
 ### VS Code
 
 可以直接使用`launch.json`的配置，里面还包含了环境变量的配置直接设置即可
 
-### 编译运行
+## 编译运行
 
-在根目录执行`go build -o weChatRobot-go main.go`，编译得到可执行文件`weChatRobot-go`。
+### 直接构建
 
-执行`./weChatRobot-go -config ./config.yml`启动项目
+```shell
+go build -o weChatRobot main.go
+```
+构建完成在项目根目录会生成名为`weChatRobot`的文件
 
-编译适合当前系统的可执行文件：
+执行启动
+
+```shell
+./weChatRobot -config ./config.yml
+```
+
+### 通过Makefile构建
+
+构建适合当前系统的可执行文件
 
 ```shell
 make
 ```
 
-编译全平台的可执行文件：
+构建指定平台架构的可执行文件
+
+```shell
+make linux_amd64
+```
+
+编译全平台的可执行文件
 
 ```shell
 make all
@@ -65,13 +81,19 @@ make all
 
 ## Docker运行
 
-构建适用于当前操作系统/架构的镜像
+构建适用于当前操作系统架构的镜像
 
 ```shell
 docker build --no-cache -t wechatrobot-go:latest .
 ```
 
-后台启动项目
+构建指定架构的镜像
+
+```
+docker buildx build -f docker/Dockerfile --no-cache -t wechatrobot-go:latest --platform=linux/amd64 -o type=docker .
+```
+
+后台启动镜像
 
 ```shell
 docker run --name wechatrobot-go -p 8080:8080 -d wechatrobot-go:latest
