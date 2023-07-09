@@ -1,22 +1,19 @@
-FROM golang:1.19.9 as build
+FROM golang:1.20.5 as build
 
 WORKDIR /src/weChatRobot-go
 
 COPY . ./
 
-RUN rm -rf bin/ || true
 RUN make
 
-FROM alpine:3.16
+FROM scratch
 
-USER root
-
-WORKDIR /weChatRobot-go
+WORKDIR /app
 
 COPY --from=build /src/weChatRobot-go/bin/weChatRobot_* ./weChatRobot
 COPY --from=build /src/weChatRobot-go/config.yml ./
 
 EXPOSE 8080
 
-ENTRYPOINT ["/weChatRobot-go/weChatRobot"]
-CMD ["-config", "/weChatRobot-go/config.yml"]
+ENTRYPOINT ["/app/weChatRobot"]
+CMD ["-config", "/app/config.yml"]
