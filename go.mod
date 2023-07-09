@@ -1,6 +1,6 @@
 module weChatRobot-go
 
-go 1.19
+go 1.20
 
 require (
 	github.com/bitly/go-simplejson v0.5.0
