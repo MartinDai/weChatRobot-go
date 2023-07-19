@@ -70,8 +70,9 @@ func (ws *WechatService) GetResponseMessage(reqMessage model.ReqMessage) string 
 		respMessage = util.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 	}
 
-	respXmlStr, err := xml.Marshal(&respMessage)
-	if err != nil {
+	var respXmlStr []byte
+	var err error
+	if respXmlStr, err = xml.Marshal(&respMessage); err != nil {
 		log.Printf("XML编码出错: %v\n", err)
 		return ""
 	}
@@ -91,8 +92,9 @@ func getRespMessageByEvent(fromUserName, toUserName, event string) interface{} {
 func getRespMessageByKeyword(fromUserName, toUserName, keyword string) interface{} {
 	v, ok := keywordMessageMap[keyword]
 	if ok {
-		msgType, err := v.Get("type").String()
-		if err != nil {
+		var msgType string
+		var err error
+		if msgType, err = v.Get("type").String(); err != nil {
 			return nil
 		}
 
@@ -100,8 +102,8 @@ func getRespMessageByKeyword(fromUserName, toUserName, keyword string) interface
 			content, _ := v.Get("Content").String()
 			return util.BuildRespTextMessage(fromUserName, toUserName, content)
 		} else if msgType == model.MsgTypeNews {
-			articleArray, err := v.Get("Articles").Array()
-			if err != nil {
+			var articleArray []interface{}
+			if articleArray, err = v.Get("Articles").Array(); err != nil {
 				return nil
 			}
 

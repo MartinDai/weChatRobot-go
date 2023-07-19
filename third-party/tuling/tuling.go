@@ -49,20 +49,21 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 	reqJson := string(reqJsonBytes)
 	log.Printf("请求图灵机器人参数 %v", reqJson)
 
-	resp, err := http.Post(tulingApiUrl, "application/json", bytes.NewReader(reqJsonBytes))
-	if err != nil {
+	var resp *http.Response
+	var err error
+	if resp, err = http.Post(tulingApiUrl, "application/json", bytes.NewReader(reqJsonBytes)); err != nil {
 		log.Printf("从图灵机器人获取响应内容报错,err:%v", err)
 		return nil
 	}
 
-	result, err := io.ReadAll(resp.Body)
-	if err != nil {
+	var result []byte
+	if result, err = io.ReadAll(resp.Body); err != nil {
 		log.Printf("读取图灵机器人响应内容报错,err:%v", err)
 		return nil
 	}
 
-	resultJson, err := simplejson.NewJson(result)
-	if err != nil {
+	var resultJson *simplejson.Json
+	if resultJson, err = simplejson.NewJson(result); err != nil {
 		log.Printf("解析图灵机器人响应JSON报错:%v", err)
 		return nil
 	}

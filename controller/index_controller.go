@@ -39,8 +39,7 @@ func (mc *MessageController) ReceiveMessage(c *gin.Context) {
 		}
 	} else {
 		var reqMessage model.ReqMessage
-		err := c.ShouldBindXML(&reqMessage)
-		if err != nil {
+		if err := c.ShouldBindXML(&reqMessage); err != nil {
 			_, _ = fmt.Fprint(c.Writer, "系统处理消息异常")
 			log.Printf("解析XML出错: %v\n", err)
 			return

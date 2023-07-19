@@ -26,15 +26,15 @@ func (ycp *ymlConfigProvider) RetrieveConfig() (*model.Config, error) {
 	}
 
 	var config model.Config
-	absolutePath, err := filepath.Abs(ycp.filePath)
-	if err != nil {
+	var absolutePath string
+	var err error
+	if absolutePath, err = filepath.Abs(ycp.filePath); err != nil {
 		return nil, err
 	}
 
 	k := koanf.New("::")
 	_ = k.Load(file.Provider(absolutePath), yaml.Parser())
-	err = k.Unmarshal("", &config)
-	if err != nil {
+	if err = k.Unmarshal("", &config); err != nil {
 		return nil, err
 	}
 	return &config, nil

@@ -37,8 +37,10 @@ func (gpt *ChatGPT) GetRespMessage(fromUserName, toUserName, content string) int
 		},
 	}
 	ctx := context.Background()
-	response, err := gpt.client.Chat(ctx, request)
-	if err != nil {
+
+	var response openaigo.ChatCompletionResponse
+	var err error
+	if response, err = gpt.client.Chat(ctx, request); err != nil {
 		fmt.Printf("Completion error: %v\n", err)
 		return nil
 	}
