@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"sync/atomic"
+	"weChatRobot-go/logger"
 	"weChatRobot-go/model"
 	"weChatRobot-go/util"
 
@@ -47,28 +47,28 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 
 	reqJsonBytes, _ := json.Marshal(req)
 	reqJson := string(reqJsonBytes)
-	log.Printf("请求图灵机器人参数 %v", reqJson)
+	logger.Info("请求图灵机器人参数 %s", reqJson)
 
 	var resp *http.Response
 	var err error
 	if resp, err = http.Post(tulingApiUrl, "application/json", bytes.NewReader(reqJsonBytes)); err != nil {
-		log.Printf("从图灵机器人获取响应内容报错,err:%v", err)
+		logger.Error(err, "从图灵机器人获取响应内容报错")
 		return nil
 	}
 
 	var result []byte
 	if result, err = io.ReadAll(resp.Body); err != nil {
-		log.Printf("读取图灵机器人响应内容报错,err:%v", err)
+		logger.Error(err, "读取图灵机器人响应内容报错")
 		return nil
 	}
 
 	var resultJson *simplejson.Json
 	if resultJson, err = simplejson.NewJson(result); err != nil {
-		log.Printf("解析图灵机器人响应JSON报错:%v", err)
+		logger.Error(err, "解析图灵机器人响应JSON报错")
 		return nil
 	}
 
-	log.Printf("收到图灵机器人响应内容 %v", resultJson)
+	logger.Info("收到图灵机器人响应内容 %v", resultJson)
 
 	code, _ := resultJson.Get("intent").Get("code").Int()
 	switch code {

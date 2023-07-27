@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"path"
 	"time"
 	"weChatRobot-go/controller"
+	"weChatRobot-go/logger"
 	"weChatRobot-go/model"
 	"weChatRobot-go/provider"
 	"weChatRobot-go/service"
@@ -34,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	if err := runApp(configFile); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err, "process config error")
 	}
 }
 
@@ -55,9 +55,9 @@ func runApp(configFile string) error {
 
 	ctx := context.Background()
 	go func() {
-		log.Printf("[INFO] Listening and serving HTTP on http://127.0.0.1%s\n", srv.Addr)
+		logger.Info("Listening and serving HTTP on http://127.0.0.1%s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal(fmt.Errorf("[ERROR] Server startup failed, Cause:%w", err))
+			logger.Fatal(err, "Server startup failed")
 		}
 	}()
 
@@ -65,14 +65,14 @@ func runApp(configFile string) error {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-	log.Println("[INFO] Shutdown Server")
+	logger.Info("Shutdown Server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err = srv.Shutdown(ctx); err != nil {
-		log.Fatal("[ERROR] Server Shutdown:", err)
+		logger.Fatal(err, "Server Shutdown failed")
 	}
-	log.Println("[INFO] Server exiting")
+	logger.Info("Server exited")
 
 	return nil
 }
@@ -107,12 +107,12 @@ func setupRouter(config *model.Config) *gin.Engine {
 	if openaiApiKey != "" {
 		openaiBaseDomain := os.Getenv("OPENAI_BASE_DOMAIN")
 		if openaiBaseDomain != "" && !util.ValidateAddress(openaiBaseDomain) {
-			log.Fatalf("[ERROR] OPENAI_BASE_DOMAIN is not valid:%v", openaiBaseDomain)
+			logger.Fatalf("OPENAI_BASE_DOMAIN is not valid:%s", openaiBaseDomain)
 		}
 
 		openaiProxy := os.Getenv("OPENAI_PROXY")
 		if openaiProxy != "" && !util.ValidateAddress(openaiProxy) {
-			log.Fatalf("[ERROR] OPENAI_PROXY is not valid:%v", openaiBaseDomain)
+			logger.Fatalf("OPENAI_PROXY is not valid:%v", openaiBaseDomain)
 		}
 
 		chatGPT = chatgpt.NewChatGPT(openaiApiKey, openaiBaseDomain, openaiProxy)

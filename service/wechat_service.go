@@ -4,9 +4,9 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/xml"
-	"log"
 	"sort"
 	"strings"
+	"weChatRobot-go/logger"
 	"weChatRobot-go/model"
 	"weChatRobot-go/third-party/chatgpt"
 	"weChatRobot-go/third-party/tuling"
@@ -73,7 +73,7 @@ func (ws *WechatService) GetResponseMessage(reqMessage model.ReqMessage) string 
 	var respXmlStr []byte
 	var err error
 	if respXmlStr, err = xml.Marshal(&respMessage); err != nil {
-		log.Printf("XML编码出错: %v\n", err)
+		logger.Error(err, "XML编码出错")
 		return ""
 	}
 
@@ -84,7 +84,7 @@ func getRespMessageByEvent(fromUserName, toUserName, event string) interface{} {
 	if event == model.EventTypeSubscribe {
 		return util.BuildRespTextMessage(fromUserName, toUserName, "谢谢关注！可以开始跟我聊天啦😁")
 	} else if event == model.EventTypeUnsubscribe {
-		log.Printf("用户[%v]取消了订阅", fromUserName)
+		logger.Info("用户[%s]取消了订阅", fromUserName)
 	}
 	return nil
 }

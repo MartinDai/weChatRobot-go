@@ -2,9 +2,9 @@ package chatgpt
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
+	"weChatRobot-go/logger"
 	"weChatRobot-go/util"
 
 	"github.com/otiai10/openaigo"
@@ -41,7 +41,7 @@ func (gpt *ChatGPT) GetRespMessage(fromUserName, toUserName, content string) int
 	var response openaigo.ChatCompletionResponse
 	var err error
 	if response, err = gpt.client.Chat(ctx, request); err != nil {
-		fmt.Printf("Completion error: %v\n", err)
+		logger.Error(err, "GPT Completion error")
 		return nil
 	}
 	return util.BuildRespTextMessage(fromUserName, toUserName, response.Choices[0].Message.Content)

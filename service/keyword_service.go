@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/bitly/go-simplejson"
-	"log"
+	"weChatRobot-go/logger"
 )
 
 var keywordMessageMap = make(map[string]*simplejson.Json)
@@ -11,18 +11,18 @@ func InitKeywordMap(keywordBytes []byte) {
 	var keywordJson *simplejson.Json
 	var err error
 	if keywordJson, err = simplejson.NewJson(keywordBytes); err != nil {
-		log.Printf("解析关键字JSON文件报错:%v", err)
+		logger.Error(err, "解析关键字JSON文件报错")
 		return
 	}
 
 	var keywordMap map[string]interface{}
 	if keywordMap, err = keywordJson.Map(); err != nil {
-		log.Printf("转换关键字JSON为Map报错:%v", err)
+		logger.Error(err, "转换关键字JSON为Map报错")
 		return
 	}
 
 	for k, v := range keywordMap {
-		log.Printf("初始化关键字map %v %v\n", k, v)
+		logger.Info("初始化关键字map %s %v", k, v)
 		keywordMessageMap[k] = keywordJson.Get(k)
 	}
 }

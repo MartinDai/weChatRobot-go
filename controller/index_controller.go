@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
+	"weChatRobot-go/logger"
 	"weChatRobot-go/model"
 	"weChatRobot-go/service"
 	"weChatRobot-go/third-party/chatgpt"
@@ -41,13 +41,13 @@ func (mc *MessageController) ReceiveMessage(c *gin.Context) {
 		var reqMessage model.ReqMessage
 		if err := c.ShouldBindXML(&reqMessage); err != nil {
 			_, _ = fmt.Fprint(c.Writer, "系统处理消息异常")
-			log.Printf("解析XML出错: %v\n", err)
+			logger.Error(err, "解析XML出错")
 			return
 		}
 
-		log.Printf("收到消息 %v\n", reqMessage)
+		logger.Info("收到消息:%v", reqMessage)
 		respXmlStr := mc.wechatService.GetResponseMessage(reqMessage)
-		log.Printf("响应消息 %v\n", respXmlStr)
+		logger.Info("响应消息:%v", respXmlStr)
 
 		_, _ = fmt.Fprint(c.Writer, respXmlStr)
 	}
