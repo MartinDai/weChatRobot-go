@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -53,26 +54,29 @@ func runApp(configFile string) error {
 		Handler: router,
 	}
 
-	ctx := context.Background()
+	//启动新的协程处理端口监听事件
 	go func() {
 		logger.Info("Listening and serving HTTP on http://127.0.0.1%s", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Fatal(err, "Server startup failed")
 		}
 	}()
 
-	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+	// 等待中断信号
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 	logger.Info("Shutdown Server")
 
+	// 配置一个5秒自动超时关闭的context
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// 如果context提前结束，则需要保证cancel方法能被执行
 	defer cancel()
+	// 调用Server的Shutdown方法优雅地停止服务（达到超时时间返回或者提前返回）
 	if err = srv.Shutdown(ctx); err != nil {
 		logger.Fatal(err, "Server Shutdown failed")
 	}
-	logger.Info("Server exited")
+	logger.Info("Server gracefully stopped")
 
 	return nil
 }
