@@ -2,7 +2,7 @@ package util
 
 import (
 	"time"
-	"weChatRobot-go/model"
+	"weChatRobot-go/pkg/model"
 )
 
 func BuildRespTextMessage(fromUserName, toUserName, content string) model.RespTextMessage {

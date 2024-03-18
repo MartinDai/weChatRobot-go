@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"io"
 	"net/http"
 	"sync/atomic"
-	"weChatRobot-go/logger"
-	"weChatRobot-go/model"
-	"weChatRobot-go/util"
-
-	"github.com/bitly/go-simplejson"
+	"weChatRobot-go/pkg/logger"
+	"weChatRobot-go/pkg/model"
+	"weChatRobot-go/pkg/util"
 )
 
 const tulingApiUrl = "https://openapi.tuling123.com/openapi/api/v2"

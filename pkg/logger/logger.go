@@ -60,7 +60,7 @@ func Error(err error, format string, v ...any) {
 }
 
 func Fatal(err error, format string, v ...any) {
-	log.Fatalf("[ERROR] "+format+"\nCause:%w\n", append(v, err)...)
+	log.Fatalf("[ERROR] "+format+"\nCause: %+v\n", append(v, err)...)
 }
 
 func Fatalf(format string, v ...any) {

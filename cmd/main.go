@@ -13,18 +13,21 @@ import (
 	"os/signal"
 	"path"
 	"time"
-	"weChatRobot-go/controller"
-	"weChatRobot-go/logger"
-	"weChatRobot-go/model"
-	"weChatRobot-go/provider"
-	"weChatRobot-go/service"
-	"weChatRobot-go/third-party/chatgpt"
-	"weChatRobot-go/third-party/tuling"
-	"weChatRobot-go/util"
+	"weChatRobot-go/pkg/controller"
+	"weChatRobot-go/pkg/logger"
+	"weChatRobot-go/pkg/model"
+	"weChatRobot-go/pkg/provider"
+	"weChatRobot-go/pkg/service"
+	"weChatRobot-go/pkg/third-party/chatgpt"
+	"weChatRobot-go/pkg/third-party/tuling"
+	"weChatRobot-go/pkg/util"
 )
 
-//go:embed static/images templates
-var fs embed.FS
+//go:embed static/templates
+var templateFS embed.FS
+
+//go:embed static/images
+var imagesFS embed.FS
 
 //go:embed static/keyword.json
 var keywordBytes []byte
@@ -83,14 +86,14 @@ func runApp(configFile string) error {
 
 func getConfig(configFile string) (*model.Config, error) {
 	if configFile == "" {
-		return nil, fmt.Errorf("[ERROR] config file not specified")
+		return nil, fmt.Errorf("config file not specified")
 	}
 
 	fileExt := path.Ext(configFile)
 	if fileExt == ".yml" || fileExt == ".yaml" {
 		return provider.NewFile(configFile).RetrieveConfig()
 	} else {
-		return nil, fmt.Errorf("[ERROR] config file only support .yml or .yaml format")
+		return nil, fmt.Errorf("config file only support .yml or .yaml format")
 	}
 }
 
@@ -99,10 +102,10 @@ func setupRouter(config *model.Config) *gin.Engine {
 
 	router := gin.Default()
 	//模板文件
-	templates := template.Must(template.New("").ParseFS(fs, "templates/*.html"))
+	templates := template.Must(template.New("").ParseFS(templateFS, "static/templates/*.html"))
 	router.SetHTMLTemplate(templates)
 	//静态文件
-	router.StaticFS("/public", http.FS(fs))
+	router.StaticFS("/public", http.FS(imagesFS))
 
 	router.GET("/", controller.IndexHandler)
 

@@ -2,12 +2,11 @@ package chatgpt
 
 import (
 	"context"
+	"github.com/otiai10/openaigo"
 	"net/http"
 	"net/url"
-	"weChatRobot-go/logger"
-	"weChatRobot-go/util"
-
-	"github.com/otiai10/openaigo"
+	"weChatRobot-go/pkg/logger"
+	"weChatRobot-go/pkg/util"
 )
 
 type ChatGPT struct {

@@ -4,7 +4,7 @@
 
 本项目还有Java实现的版本：<https://github.com/MartinDai/weChatRobot>
 
-![qrcode](static/images/qrcode.jpg "扫码关注，体验智能机器人")
+![qrcode](cmd/static/images/qrcode.jpg "扫码关注，体验智能机器人")
 
 ## 项目介绍
 
@@ -44,19 +44,6 @@
 
 ## 编译运行
 
-### 直接构建
-
-```shell
-go build -o weChatRobot main.go
-```
-构建完成在项目根目录会生成名为`weChatRobot`的文件
-
-执行启动
-
-```shell
-./weChatRobot -config ./config.yml
-```
-
 ### 通过Makefile构建
 
 构建适合当前系统的可执行文件
@@ -77,7 +64,7 @@ make linux_amd64
 make all
 ```
 
-生成的可执行文件在`bin`目录下
+生成的可执行文件在`bin`目录下，执行`./bin/weChatRobot_darwin_arm64 -config config.yml`启动运行，其中`_darwin_arm64`后缀不同系统架构不一样
 
 ## Docker运行
 

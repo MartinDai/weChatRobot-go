@@ -3,4 +3,4 @@
 __debug_bin
 
 bin/
-weChatRobot
+vendor/

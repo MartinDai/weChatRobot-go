@@ -6,7 +6,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"path/filepath"
-	"weChatRobot-go/model"
+	"weChatRobot-go/pkg/model"
 )
 
 type ymlConfigProvider struct {

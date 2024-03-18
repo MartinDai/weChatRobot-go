@@ -1,7 +1,7 @@
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
-GO_BUILD=CGO_ENABLED=0 go build -trimpath
+GO_BUILD=CGO_ENABLED=0 go build -trimpath -mod=vendor
 
 .DEFAULT_GOAL := build
 
@@ -29,5 +29,9 @@ windows_amd64:
 	GOOS=windows GOARCH=amd64 EXTENSION=.exe $(MAKE) build
 
 .PHONY: build
-build:
-	$(GO_BUILD) -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) .
+build: vendor
+	$(GO_BUILD) -o ./bin/weChatRobot_$(GOOS)_$(GOARCH)$(EXTENSION) ./cmd/
+
+.PHONY: vendor
+vendor:
+	go mod vendor

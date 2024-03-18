@@ -6,11 +6,11 @@ import (
 	"encoding/xml"
 	"sort"
 	"strings"
-	"weChatRobot-go/logger"
-	"weChatRobot-go/model"
-	"weChatRobot-go/third-party/chatgpt"
-	"weChatRobot-go/third-party/tuling"
-	"weChatRobot-go/util"
+	"weChatRobot-go/pkg/logger"
+	"weChatRobot-go/pkg/model"
+	"weChatRobot-go/pkg/third-party/chatgpt"
+	"weChatRobot-go/pkg/third-party/tuling"
+	"weChatRobot-go/pkg/util"
 )
 
 type WechatService struct {

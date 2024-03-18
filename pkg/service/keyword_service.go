@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/bitly/go-simplejson"
-	"weChatRobot-go/logger"
+	"weChatRobot-go/pkg/logger"
 )
 
 var keywordMessageMap = make(map[string]*simplejson.Json)

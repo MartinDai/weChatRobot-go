@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"weChatRobot-go/logger"
-	"weChatRobot-go/model"
-	"weChatRobot-go/service"
-	"weChatRobot-go/third-party/chatgpt"
-	"weChatRobot-go/third-party/tuling"
+	"weChatRobot-go/pkg/logger"
+	"weChatRobot-go/pkg/model"
+	"weChatRobot-go/pkg/service"
+	"weChatRobot-go/pkg/third-party/chatgpt"
+	"weChatRobot-go/pkg/third-party/tuling"
 )
 
 func IndexHandler(c *gin.Context) {
