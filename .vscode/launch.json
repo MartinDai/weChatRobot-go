@@ -15,10 +15,10 @@
                 "OPENAI_BASE_DOMAIN": "",
                 "OPENAI_PROXY": ""
             },
-            "program": "${workspaceFolder}/main.go",
+            "program": "${workspaceFolder}/cmd/main.go",
             "args": [
                 "-config",
-                "./config.yml"
+                "config.yml"
             ]
         }
     ]
