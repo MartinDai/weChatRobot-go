@@ -36,7 +36,7 @@
 
 ### GoLand
 
-需要配置Program Arguments为`-config ./config.yml`，然后运行main.go
+需要配置Program Arguments为`-config config.yml`，然后运行main.go
 
 ### VS Code
 
