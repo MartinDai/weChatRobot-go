@@ -1,28 +1,27 @@
 package service
 
 import (
-	"github.com/bitly/go-simplejson"
+	"github.com/tidwall/gjson"
 	"weChatRobot-go/pkg/logger"
 )
 
-var keywordMessageMap = make(map[string]*simplejson.Json)
+var keywordResultMap gjson.Result
 
 func InitKeywordMap(keywordBytes []byte) {
-	var keywordJson *simplejson.Json
-	var err error
-	if keywordJson, err = simplejson.NewJson(keywordBytes); err != nil {
-		logger.Error(err, "解析关键字JSON文件报错")
+	if !gjson.ValidBytes(keywordBytes) {
+		logger.Warn("关键字JSON文件格式不正确，跳过解析")
 		return
 	}
 
-	var keywordMap map[string]interface{}
-	if keywordMap, err = keywordJson.Map(); err != nil {
-		logger.Error(err, "转换关键字JSON为Map报错")
-		return
-	}
+	result := gjson.ParseBytes(keywordBytes)
+	keywordResultMap = result
 
-	for k, v := range keywordMap {
-		logger.Info("初始化关键字map", k, v)
-		keywordMessageMap[k] = keywordJson.Get(k)
+	for k, v := range keywordResultMap.Map() {
+		logger.Info("初始化关键字map", k, v.Value())
 	}
+}
+
+func GetResultByKeyword(keyword string) gjson.Result {
+	result := keywordResultMap.Get(keyword)
+	return result
 }

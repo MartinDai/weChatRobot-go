@@ -90,37 +90,34 @@ func getRespMessageByEvent(fromUserName, toUserName, event string) interface{} {
 }
 
 func getRespMessageByKeyword(fromUserName, toUserName, keyword string) interface{} {
-	v, ok := keywordMessageMap[keyword]
-	if ok {
-		var msgType string
-		var err error
-		if msgType, err = v.Get("type").String(); err != nil {
+	v := GetResultByKeyword(keyword)
+	if v.Exists() {
+		msgType := v.Get("type").String()
+		if msgType == "" {
 			return nil
 		}
 
 		if msgType == model.MsgTypeText {
-			content, _ := v.Get("Content").String()
+			content := v.Get("Content").String()
 			return util.BuildRespTextMessage(fromUserName, toUserName, content)
 		} else if msgType == model.MsgTypeNews {
-			var articleArray []interface{}
-			if articleArray, err = v.Get("Articles").Array(); err != nil {
+			articleArray := v.Get("Articles").Array()
+			var articleLength = len(articleArray)
+			if articleLength == 0 {
 				return nil
 			}
 
-			var articleLength = len(articleArray)
 			var articles = make([]model.ArticleItem, articleLength)
 			for i, articleJson := range articleArray {
-				if eachArticle, ok := articleJson.(map[string]interface{}); ok {
-					var article model.Article
-					article.Title = eachArticle["Title"].(string)
-					article.Description = eachArticle["Description"].(string)
-					article.PicUrl = eachArticle["PicUrl"].(string)
-					article.Url = eachArticle["Url"].(string)
+				var article model.Article
+				article.Title = articleJson.Get("Title").String()
+				article.Description = articleJson.Get("Description").String()
+				article.PicUrl = articleJson.Get("PicUrl").String()
+				article.Url = articleJson.Get("Url").String()
 
-					var articleItem model.ArticleItem
-					articleItem.Article = article
-					articles[i] = articleItem
-				}
+				var articleItem model.ArticleItem
+				articleItem.Article = article
+				articles[i] = articleItem
 			}
 			return util.BuildRespNewsMessage(fromUserName, toUserName, articles)
 		}

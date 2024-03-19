@@ -13,7 +13,7 @@
 ## 第三方依赖
 
 - [gin](https://github.com/gin-gonic/gin)
-- [simplejson](https://github.com/bitly/go-simplejson)
+- [gjson](https://github.com/tidwall/gjson)
 - [yaml](https://gopkg.in/yaml.v3)
 - [openaigo](https://github.com/otiai10/openaigo)
 

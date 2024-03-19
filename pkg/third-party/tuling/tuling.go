@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/bitly/go-simplejson"
+	"github.com/tidwall/gjson"
 	"io"
 	"net/http"
 	"sync/atomic"
@@ -55,21 +55,22 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 		return nil
 	}
 
-	var result []byte
-	if result, err = io.ReadAll(resp.Body); err != nil {
+	var respBytes []byte
+	if respBytes, err = io.ReadAll(resp.Body); err != nil {
 		logger.Error(err, "读取图灵机器人响应内容报错")
 		return nil
 	}
 
-	var resultJson *simplejson.Json
-	if resultJson, err = simplejson.NewJson(result); err != nil {
-		logger.Error(err, "解析图灵机器人响应JSON报错")
+	respStr := string(respBytes)
+	logger.Info("收到图灵机器人响应内容", "respStr", respStr)
+
+	if !gjson.Valid(respStr) {
+		logger.Warn("图灵机器人响应内容不是json格式，无法解析")
 		return nil
 	}
 
-	logger.Info("收到图灵机器人响应内容", "resultJson", resultJson)
-
-	code, _ := resultJson.Get("intent").Get("code").Int()
+	respJson := gjson.Parse(respStr)
+	code := respJson.Get("intent.code").Int()
 	switch code {
 	case model.ParamErrCode:
 		return util.BuildRespTextMessage(fromUserName, toUserName, "我不是很理解你说的话")
@@ -79,15 +80,12 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 		return util.BuildRespTextMessage(fromUserName, toUserName, "我今天已经说了太多话了，有点累，明天再来找我聊天吧！")
 	case model.SuccessCode:
 		var respTextMessage interface{}
-		resultArray, _ := resultJson.Get("results").Array()
+		resultArray := respJson.Get("results").Array()
 		for _, result := range resultArray {
-			//转换成map结构
-			if resultMap, ok := result.(map[string]interface{}); ok {
-				if resultMap["resultType"].(string) == model.TextResultType {
-					valueMap := resultMap["values"].(map[string]interface{})
-					respTextMessage = util.BuildRespTextMessage(fromUserName, toUserName, valueMap["text"].(string))
-					break
-				}
+			if result.Get("resultType").String() == model.TextResultType {
+				valueMap := result.Get("values")
+				respTextMessage = util.BuildRespTextMessage(fromUserName, toUserName, valueMap.Get("text").String())
+				break
 			}
 		}
 		if respTextMessage != nil {
