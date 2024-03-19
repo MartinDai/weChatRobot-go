@@ -84,7 +84,7 @@ func getRespMessageByEvent(fromUserName, toUserName, event string) interface{} {
 	if event == model.EventTypeSubscribe {
 		return util.BuildRespTextMessage(fromUserName, toUserName, "谢谢关注！可以开始跟我聊天啦😁")
 	} else if event == model.EventTypeUnsubscribe {
-		logger.Info("用户[%s]取消了订阅", fromUserName)
+		logger.Info("用户取消了订阅", "fromUserName", fromUserName)
 	}
 	return nil
 }

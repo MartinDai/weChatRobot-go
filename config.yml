@@ -3,3 +3,5 @@ application:
   mode: release #GIN启动模式，支持 test debug release
 wechat:
   token: "atming_" #对应微信公众号设置里面的Token
+logger:
+  level: INFO #日志级别，支持 DEBUG INFO WARN ERROR

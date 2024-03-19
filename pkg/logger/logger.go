@@ -1,68 +1,58 @@
 package logger
 
 import (
-	"fmt"
-	"log"
+	"log/slog"
+	"os"
+	"strings"
 )
 
-var globalLogLevel int
+var lvl slog.LevelVar
 
 func init() {
-	globalLogLevel = INFO
+	lvl.Set(slog.LevelInfo)
+	opts := slog.HandlerOptions{
+		//AddSource: true,
+		Level: &lvl,
+	}
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &opts)))
 }
 
-const (
-	FATAL = iota
-	ERROR
-	WARN
-	INFO
-	DEBUG
-)
-
-func SetGlobalLogLevel(level int) {
-	globalLogLevel = level
-}
-
-func Debug(format string, v ...any) {
-	if globalLogLevel >= DEBUG {
-		if len(v) == 0 {
-			log.Println("[DEBUG] " + format)
-		} else {
-			log.Printf("[DEBUG] "+format+"\n", v...)
-		}
+func SetLevel(level string) {
+	level = strings.ToUpper(level)
+	switch level {
+	case slog.LevelDebug.String():
+		lvl.Set(slog.LevelDebug)
+	case slog.LevelInfo.String():
+		lvl.Set(slog.LevelInfo)
+	case slog.LevelWarn.String():
+		lvl.Set(slog.LevelWarn)
+	case slog.LevelError.String():
+		lvl.Set(slog.LevelError)
 	}
 }
 
-func Info(format string, v ...any) {
-	if globalLogLevel >= INFO {
-		if len(v) == 0 {
-			log.Println("[INFO] " + format)
-		} else {
-			log.Printf("[INFO] "+format+"\n", v...)
-		}
-	}
+func Debug(msg string, v ...any) {
+	slog.Debug(msg, v...)
 }
 
-func Warn(format string, v ...any) {
-	if globalLogLevel >= WARN {
-		if len(v) == 0 {
-			log.Println("[WARN] " + format)
-		} else {
-			log.Printf("[WARN] "+format+"\n", v...)
-		}
-	}
+func Info(msg string, v ...any) {
+	slog.Info(msg, v...)
 }
 
-func Error(err error, format string, v ...any) {
-	if globalLogLevel >= ERROR {
-		log.Printf("[ERROR] "+format+"\n%v\n", append(v, fmt.Errorf("cause:%w", err))...)
-	}
+func Warn(msg string, v ...any) {
+	slog.Warn(msg, v...)
 }
 
-func Fatal(err error, format string, v ...any) {
-	log.Fatalf("[ERROR] "+format+"\nCause: %+v\n", append(v, err)...)
+func Error(err error, msg string, v ...any) {
+	slog.Error(msg, append([]interface{}{"err", err}, v...)...)
 }
 
-func Fatalf(format string, v ...any) {
-	log.Fatalf("[ERROR] "+format+"\n", v...)
+func FatalWithErr(err error, format string, v ...any) {
+	Error(err, format, v...)
+	os.Exit(1)
+}
+
+func Fatal(format string, v ...any) {
+	Error(nil, format, v...)
+	os.Exit(1)
 }

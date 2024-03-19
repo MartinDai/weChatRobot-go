@@ -76,7 +76,7 @@ docker build --no-cache -t wechatrobot-go:latest .
 
 构建指定架构的镜像
 
-```
+```shell
 docker buildx build --no-cache -t wechatrobot-go:latest --platform=linux/amd64 -o type=docker .
 ```
 

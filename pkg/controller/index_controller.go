@@ -45,9 +45,9 @@ func (mc *MessageController) ReceiveMessage(c *gin.Context) {
 			return
 		}
 
-		logger.Info("收到消息:%v", reqMessage)
+		logger.Info("收到消息", "reqMessage", reqMessage)
 		respXmlStr := mc.wechatService.GetResponseMessage(reqMessage)
-		logger.Info("响应消息:%v", respXmlStr)
+		logger.Info("响应消息", "respXmlStr", respXmlStr)
 
 		_, _ = fmt.Fprint(c.Writer, respXmlStr)
 	}

@@ -22,7 +22,7 @@ func InitKeywordMap(keywordBytes []byte) {
 	}
 
 	for k, v := range keywordMap {
-		logger.Info("初始化关键字map %s %v", k, v)
+		logger.Info("初始化关键字map", k, v)
 		keywordMessageMap[k] = keywordJson.Get(k)
 	}
 }

@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	if err := runApp(configFile); err != nil {
-		logger.Fatal(err, "process config error")
+		logger.FatalWithErr(err, "process config error")
 	}
 }
 
@@ -48,6 +48,8 @@ func runApp(configFile string) error {
 	if config, err = getConfig(configFile); err != nil {
 		return err
 	}
+
+	logger.SetLevel(config.LoggerConfig.Level)
 
 	service.InitKeywordMap(keywordBytes)
 
@@ -59,9 +61,9 @@ func runApp(configFile string) error {
 
 	//启动新的协程处理端口监听事件
 	go func() {
-		logger.Info("Listening and serving HTTP on http://127.0.0.1%s", srv.Addr)
+		logger.Info("Listening and serving HTTP", "addr", "http://127.0.0.1:"+srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Fatal(err, "Server startup failed")
+			logger.FatalWithErr(err, "Server startup failed")
 		}
 	}()
 
@@ -77,7 +79,7 @@ func runApp(configFile string) error {
 	defer cancel()
 	// 调用Server的Shutdown方法优雅地停止服务（达到超时时间返回或者提前返回）
 	if err = srv.Shutdown(ctx); err != nil {
-		logger.Fatal(err, "Server Shutdown failed")
+		logger.FatalWithErr(err, "Server Shutdown failed")
 	}
 	logger.Info("Server gracefully stopped")
 
@@ -114,12 +116,12 @@ func setupRouter(config *model.Config) *gin.Engine {
 	if openaiApiKey != "" {
 		openaiBaseDomain := os.Getenv("OPENAI_BASE_DOMAIN")
 		if openaiBaseDomain != "" && !util.ValidateAddress(openaiBaseDomain) {
-			logger.Fatalf("OPENAI_BASE_DOMAIN is not valid:%s", openaiBaseDomain)
+			logger.Fatal("OPENAI_BASE_DOMAIN is not valid", "openaiBaseDomain", openaiBaseDomain)
 		}
 
 		openaiProxy := os.Getenv("OPENAI_PROXY")
 		if openaiProxy != "" && !util.ValidateAddress(openaiProxy) {
-			logger.Fatalf("OPENAI_PROXY is not valid:%v", openaiBaseDomain)
+			logger.Fatal("OPENAI_PROXY is not valid", "openaiBaseDomain", openaiBaseDomain)
 		}
 
 		chatGPT = chatgpt.NewChatGPT(openaiApiKey, openaiBaseDomain, openaiProxy)

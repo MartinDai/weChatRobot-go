@@ -46,7 +46,7 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 
 	reqJsonBytes, _ := json.Marshal(req)
 	reqJson := string(reqJsonBytes)
-	logger.Info("请求图灵机器人参数 %s", reqJson)
+	logger.Info("请求图灵机器人", "reqJson", reqJson)
 
 	var resp *http.Response
 	var err error
@@ -67,7 +67,7 @@ func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interf
 		return nil
 	}
 
-	logger.Info("收到图灵机器人响应内容 %v", resultJson)
+	logger.Info("收到图灵机器人响应内容", "resultJson", resultJson)
 
 	code, _ := resultJson.Get("intent").Get("code").Int()
 	switch code {
