@@ -10,11 +10,12 @@
 
   本项目是一个微信公众号项目，需配合微信公众号使用，在微信公众号配置本项目运行的服务器域名，用户关注公众号后，向公众号发送任意信息，公众号会根据用户发送的内容自动回复。
   
-## 涉及框架及技术
+## 第三方依赖
 
 - [gin](https://github.com/gin-gonic/gin)
 - [simplejson](https://github.com/bitly/go-simplejson)
-- [koanf](https://github.com/knadh/koanf)
+- [yaml](https://gopkg.in/yaml.v3)
+- [openaigo](https://github.com/otiai10/openaigo)
 
 ## 支持的功能
 

@@ -2,10 +2,8 @@ package provider
 
 import (
 	"errors"
-	"github.com/knadh/koanf"
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
-	"path/filepath"
+	"gopkg.in/yaml.v3"
+	"os"
 	"weChatRobot-go/pkg/model"
 )
 
@@ -26,15 +24,15 @@ func (ycp *ymlConfigProvider) RetrieveConfig() (*model.Config, error) {
 	}
 
 	var config model.Config
-	var absolutePath string
-	var err error
-	if absolutePath, err = filepath.Abs(ycp.filePath); err != nil {
+
+	// 读取 YAML 文件内容
+	data, err := os.ReadFile(ycp.filePath)
+	if err != nil {
 		return nil, err
 	}
 
-	k := koanf.New("::")
-	_ = k.Load(file.Provider(absolutePath), yaml.Parser())
-	if err = k.Unmarshal("", &config); err != nil {
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
 		return nil, err
 	}
 	return &config, nil

@@ -1,20 +1,20 @@
 package model
 
 type Config struct {
-	AppConfig    AppConfig    `koanf:"application"`
-	WechatConfig WechatConfig `koanf:"wechat"`
-	LoggerConfig LoggerConfig `koanf:"logger"`
+	AppConfig    AppConfig    `yaml:"application"`
+	WechatConfig WechatConfig `yaml:"wechat"`
+	LoggerConfig LoggerConfig `yaml:"logger"`
 }
 
 type AppConfig struct {
-	Port int    `koanf:"port"`
-	Mode string `koanf:"mode"`
+	Port int    `yaml:"port"`
+	Mode string `yaml:"mode"`
 }
 
 type WechatConfig struct {
-	Token string `koanf:"token"`
+	Token string `yaml:"token"`
 }
 
 type LoggerConfig struct {
-	Level string `koanf:"level"`
+	Level string `yaml:"level"`
 }
