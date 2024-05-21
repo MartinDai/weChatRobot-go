@@ -1,6 +1,7 @@
 package dashscope
 
 import (
+	"crypto/tls"
 	"net/http"
 	"os"
 	"weChatRobot-go/pkg/logger"
@@ -16,8 +17,12 @@ func NewDashscope() *Dashscope {
 	var client *Client
 	if apiKey != "" {
 		client = &Client{
-			apiKey:     apiKey,
-			httpClient: &http.Client{},
+			apiKey: apiKey,
+			httpClient: &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				},
+			},
 		}
 	}
 
