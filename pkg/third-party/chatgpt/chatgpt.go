@@ -32,6 +32,7 @@ func (gpt *ChatGPT) GetRespMessage(fromUserName, toUserName, content string) int
 	request := openaigo.ChatCompletionRequestBody{
 		Model: "gpt-3.5-turbo",
 		Messages: []openaigo.ChatMessage{
+			{Role: "system", Content: "你是一个AI助手，保持回复内容尽量简短"},
 			{Role: "user", Content: content},
 		},
 	}
