@@ -18,9 +18,6 @@ import (
 	"weChatRobot-go/pkg/model"
 	"weChatRobot-go/pkg/provider"
 	"weChatRobot-go/pkg/service"
-	"weChatRobot-go/pkg/third-party/chatgpt"
-	"weChatRobot-go/pkg/third-party/tuling"
-	"weChatRobot-go/pkg/util"
 )
 
 //go:embed static/templates
@@ -111,29 +108,7 @@ func setupRouter(config *model.Config) *gin.Engine {
 
 	router.GET("/", controller.IndexHandler)
 
-	openaiApiKey := os.Getenv("OPENAI_API_KEY")
-	var chatGPT *chatgpt.ChatGPT
-	if openaiApiKey != "" {
-		openaiBaseDomain := os.Getenv("OPENAI_BASE_DOMAIN")
-		if openaiBaseDomain != "" && !util.ValidateAddress(openaiBaseDomain) {
-			logger.Fatal("OPENAI_BASE_DOMAIN is not valid", "openaiBaseDomain", openaiBaseDomain)
-		}
-
-		openaiProxy := os.Getenv("OPENAI_PROXY")
-		if openaiProxy != "" && !util.ValidateAddress(openaiProxy) {
-			logger.Fatal("OPENAI_PROXY is not valid", "openaiBaseDomain", openaiBaseDomain)
-		}
-
-		chatGPT = chatgpt.NewChatGPT(openaiApiKey, openaiBaseDomain, openaiProxy)
-	}
-
-	var tl *tuling.Tuling
-	tulingApiKey := os.Getenv("TULING_API_KEY")
-	if tulingApiKey != "" {
-		tl = tuling.NewTuling(tulingApiKey)
-	}
-
-	ws := controller.NewMessageController(&config.WechatConfig, chatGPT, tl)
+	ws := controller.NewMessageController(&config.WechatConfig)
 	weChatGroup := router.Group("weChat")
 	{
 		//签名回调

@@ -7,8 +7,6 @@ import (
 	"weChatRobot-go/pkg/logger"
 	"weChatRobot-go/pkg/model"
 	"weChatRobot-go/pkg/service"
-	"weChatRobot-go/pkg/third-party/chatgpt"
-	"weChatRobot-go/pkg/third-party/tuling"
 )
 
 func IndexHandler(c *gin.Context) {
@@ -19,8 +17,8 @@ type MessageController struct {
 	wechatService *service.WechatService
 }
 
-func NewMessageController(wc *model.WechatConfig, chatGPT *chatgpt.ChatGPT, tuling *tuling.Tuling) *MessageController {
-	wechatService := service.NewWechatService(wc, chatGPT, tuling)
+func NewMessageController(wc *model.WechatConfig) *MessageController {
+	wechatService := service.NewWechatService(wc)
 	return &MessageController{
 		wechatService: wechatService,
 	}

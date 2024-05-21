@@ -7,6 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 	"io"
 	"net/http"
+	"os"
 	"sync/atomic"
 	"weChatRobot-go/pkg/logger"
 	"weChatRobot-go/pkg/model"
@@ -22,7 +23,8 @@ type Tuling struct {
 	userIdAdder   int32
 }
 
-func NewTuling(apiKey string) *Tuling {
+func NewTuling() *Tuling {
+	apiKey := os.Getenv("TULING_API_KEY")
 	return &Tuling{
 		apiKey:        apiKey,
 		userNameIdMap: make(map[string]int32),
@@ -30,8 +32,12 @@ func NewTuling(apiKey string) *Tuling {
 	}
 }
 
-// GetRespMessage 从图灵机器人获取响应消息
-func (t *Tuling) GetRespMessage(fromUserName, toUserName, content string) interface{} {
+// ProcessText 从图灵机器人获取响应消息
+func (t *Tuling) ProcessText(fromUserName, toUserName, content string) interface{} {
+	if t.apiKey == "" {
+		return nil
+	}
+
 	userId := t.getUserId(toUserName)
 	req := model.ReqParam{
 		ReqType: 0,

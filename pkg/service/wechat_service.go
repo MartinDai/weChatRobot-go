@@ -8,22 +8,26 @@ import (
 	"strings"
 	"weChatRobot-go/pkg/logger"
 	"weChatRobot-go/pkg/model"
-	"weChatRobot-go/pkg/third-party/chatgpt"
+	third_party "weChatRobot-go/pkg/third-party"
+	"weChatRobot-go/pkg/third-party/dashscope"
+	"weChatRobot-go/pkg/third-party/openai"
 	"weChatRobot-go/pkg/third-party/tuling"
 	"weChatRobot-go/pkg/util"
 )
 
 type WechatService struct {
-	config  *model.WechatConfig
-	chatGPT *chatgpt.ChatGPT
-	tuling  *tuling.Tuling
+	config     *model.WechatConfig
+	assistants []third_party.AssistantService
 }
 
-func NewWechatService(wc *model.WechatConfig, chatGPT *chatgpt.ChatGPT, tuling *tuling.Tuling) *WechatService {
+func NewWechatService(wc *model.WechatConfig) *WechatService {
 	return &WechatService{
-		config:  wc,
-		chatGPT: chatGPT,
-		tuling:  tuling,
+		config: wc,
+		assistants: []third_party.AssistantService{
+			openai.NewOpenAI(),
+			dashscope.NewDashscope(),
+			tuling.NewTuling(),
+		},
 	}
 }
 
@@ -53,13 +57,11 @@ func (ws *WechatService) GetResponseMessage(reqMessage model.ReqMessage) string 
 	} else if reqMessage.MsgType == model.MsgTypeText {
 		respMessage = getRespMessageByKeyword(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
 
-		//优先使用ChatGPT响应
-		if respMessage == nil && ws.chatGPT != nil {
-			respMessage = ws.chatGPT.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
-		}
-
-		if respMessage == nil && ws.tuling != nil {
-			respMessage = ws.tuling.GetRespMessage(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
+		for _, ai := range ws.assistants {
+			respMessage = ai.ProcessText(reqMessage.ToUserName, reqMessage.FromUserName, reqMessage.Content)
+			if respMessage != nil {
+				break
+			}
 		}
 	} else {
 		respMessage = util.BuildRespTextMessage(reqMessage.ToUserName, reqMessage.FromUserName, "我只对文字感兴趣[悠闲]")
