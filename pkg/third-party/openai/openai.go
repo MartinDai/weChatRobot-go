@@ -52,7 +52,7 @@ func (openai *OpenAI) ProcessText(fromUserName, toUserName, content string) inte
 	request := openaigo.ChatCompletionRequestBody{
 		Model: "gpt-3.5-turbo",
 		Messages: []openaigo.ChatMessage{
-			{Role: "system", Content: "你是一个AI助手，保持回复内容尽量简短"},
+			{Role: "system", Content: "你是一个AI助手，尽量保证回复内容在200个字符以内"},
 			{Role: "user", Content: content},
 		},
 	}
