@@ -58,7 +58,7 @@ func runApp(configFile string) error {
 
 	//启动新的协程处理端口监听事件
 	go func() {
-		logger.Info("Listening and serving HTTP", "addr", "http://127.0.0.1:"+srv.Addr)
+		logger.Info("Listening and serving HTTP", "addr", "http://127.0.0.1"+srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.FatalWithErr(err, "Server startup failed")
 		}
