@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "go",
+            "name": "weChatRobot-go",
+            "goExecPath": "/usr/local/go/bin/go",
+            "buildParams": [
+                "$PROJECT_DIR$/cmd/main.go",
+            ],
+            "environment": {
+                "OPENAI_API_KEY": "",
+                "TULING_API_KEY": "",
+                "OPENAI_BASE_DOMAIN": "",
+                "OPENAI_PROXY": ""
+            },
+            "runParams": [
+                "-config",
+                "config.yml"
+            ]
+        },
+    ]
+}
