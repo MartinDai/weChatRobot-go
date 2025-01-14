@@ -2,9 +2,11 @@ package ark
 
 import (
 	"context"
+	"crypto/tls"
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime"
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime/model"
 	"github.com/volcengine/volcengine-go-sdk/volcengine"
+	"net/http"
 	"os"
 	"weChatRobot-go/pkg/logger"
 	"weChatRobot-go/pkg/util"
@@ -24,6 +26,11 @@ func NewDoubao() *Doubao {
 			apiKey,
 			arkruntime.WithBaseUrl("https://ark.cn-beijing.volces.com/api/v3"),
 			arkruntime.WithRegion("cn-beijing"),
+			arkruntime.WithHTTPClient(&http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				},
+			}),
 		)
 	}
 
