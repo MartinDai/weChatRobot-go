@@ -8,7 +8,8 @@ import (
 	"strings"
 	"weChatRobot-go/pkg/logger"
 	"weChatRobot-go/pkg/model"
-	third_party "weChatRobot-go/pkg/third-party"
+	thirdparty "weChatRobot-go/pkg/third-party"
+	"weChatRobot-go/pkg/third-party/ark"
 	"weChatRobot-go/pkg/third-party/dashscope"
 	"weChatRobot-go/pkg/third-party/openai"
 	"weChatRobot-go/pkg/third-party/tuling"
@@ -17,13 +18,14 @@ import (
 
 type WechatService struct {
 	config     *model.WechatConfig
-	assistants []third_party.AssistantService
+	assistants []thirdparty.AssistantService
 }
 
 func NewWechatService(wc *model.WechatConfig) *WechatService {
 	return &WechatService{
 		config: wc,
-		assistants: []third_party.AssistantService{
+		assistants: []thirdparty.AssistantService{
+			ark.NewDoubao(),
 			openai.NewOpenAI(),
 			dashscope.NewDashscope(),
 			tuling.NewTuling(),

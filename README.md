@@ -16,10 +16,12 @@
 - [gjson](https://github.com/tidwall/gjson)
 - [yaml](https://gopkg.in/yaml.v3)
 - [openaigo](https://github.com/otiai10/openaigo)
+- [volcengine-go-sdk](https://github.com/volcengine/volcengine-go-sdk)
 
 ## 支持的功能
 
 + [x] 自定义关键字回复内容
++ [x] 调用火山方舟（豆包）接口回复内容（需配置环境变量：`ARK_API_KEY`,`ARK_ENDPOINT_ID`）
 + [x] 调用OpenAI接口回复内容（需配置环境变量：`OPENAI_API_KEY`）
 + [x] 调用通义千问接口回复内容（需配置环境变量：`DASHSCOPE_API_KEY`）
 + [x] 调用图灵机器人(V2)接口回复内容（需配置环境变量：`TULING_API_KEY`）
@@ -31,6 +33,14 @@
 内容响应来源的优先级`自定义关键字 > OpenAI > 通义千问 > 图灵机器人`
 
 在微信公众号后台配置回调URL为<https://<your.domain>/weChat/receiveMessage>，其中`<your.domain>`替换成你自己的域名，token与`config.yml`里面配置的保持一致即可
+
+### 火山方舟（豆包）
+
+如果需要使用火山方舟的回复内容则需要
+[创建火山方舟的API Key](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey)
+和
+[创建接入点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint/create)
+并配置在启动参数或者环境变量中
 
 ### OpenAI
 
